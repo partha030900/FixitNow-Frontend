@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { useServices } from "@/hooks/useServices";
 
@@ -120,9 +120,12 @@ export default function ServicesPage() {
       Tk. {service.price}
     </span>
 
-    <button className="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700">
-      View Service
-    </button>
+    <Link
+  href={`/services/${service.id}`}
+  className="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
+>
+  View Service
+</Link>
   </div>
 </div>
             ))}
