@@ -1,24 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
-import { api } from "@/lib/api";
-
+import { useServices } from "@/hooks/useServices";
 
 export default function ServicesPage() {
-  useEffect(() => {
-  const testApi = async () => {
-    try {
-      const response = await api.get("/services");
+  const {
+    data: services = [],
+    isLoading,
+    isError,
+  } = useServices();
 
-      console.log("Services API response:", response.data);
-    } catch (error) {
-      console.error("Services API error:", error);
-    }
-  };
-
-  testApi();
-}, []);
   return (
     <main className="min-h-screen bg-gray-50">
       <Navbar />
@@ -64,79 +55,79 @@ export default function ServicesPage() {
         </div>
 
         {/* Service cards */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-xl border bg-white p-6 shadow-sm">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-xl">
-              ⚡
-            </div>
 
-            <h2 className="text-xl font-semibold text-gray-900">
-              Electrical Repair
-            </h2>
-
-            <p className="mt-3 text-gray-600">
-              Professional electrical repair and maintenance services.
+        {isLoading && (
+          <div className="rounded-xl border bg-white p-8 text-center">
+            <p className="text-gray-600">
+              Loading services...
             </p>
-
-            <div className="mt-6 flex items-center justify-between">
-              <span className="font-semibold text-blue-600">
-                From ৳500
-              </span>
-
-              <button className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-                View Service
-              </button>
-            </div>
           </div>
+        )}
 
-          <div className="rounded-xl border bg-white p-6 shadow-sm">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 text-xl">
-              🔧
-            </div>
-
-            <h2 className="text-xl font-semibold text-gray-900">
-              Plumbing
-            </h2>
-
-            <p className="mt-3 text-gray-600">
-              Reliable plumbing repair and installation services.
-            </p>
-
-            <div className="mt-6 flex items-center justify-between">
-              <span className="font-semibold text-blue-600">
-                From ৳500
-              </span>
-
-              <button className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-                View Service
-              </button>
-            </div>
+        {isError && (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-600">
+            Failed to load services. Please try again.
           </div>
+        )}
 
-          <div className="rounded-xl border bg-white p-6 shadow-sm">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100 text-xl">
-              🧹
-            </div>
+        {!isLoading && !isError && (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {services.map((service) => (
+              <div
+  key={service.id}
+  className="rounded-xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+>
+  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-xl">
+    🔧
+  </div>
 
-            <h2 className="text-xl font-semibold text-gray-900">
-              Home Cleaning
-            </h2>
+  <div className="mb-2">
+    <span className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-600">
+      {service.category.name}
+    </span>
+  </div>
 
-            <p className="mt-3 text-gray-600">
-              Professional cleaning services for your home.
-            </p>
+  <h2 className="mt-4 text-xl font-semibold text-gray-900">
+    {service.title}
+  </h2>
 
-            <div className="mt-6 flex items-center justify-between">
-              <span className="font-semibold text-blue-600">
-                From ৳500
-              </span>
+  <p className="mt-3 text-gray-600">
+    {service.description}
+  </p>
 
-              <button className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-                View Service
-              </button>
-            </div>
+  <div className="mt-5 border-t pt-4">
+    <p className="text-sm text-gray-500">
+      Technician
+    </p>
+
+    <p className="font-semibold text-gray-900">
+      {service.technician.user.name}
+    </p>
+
+    <div className="mt-2 flex items-center justify-between text-sm text-gray-500">
+      <span>
+        📍 {service.technician.location}
+      </span>
+
+      <span>
+        ⭐ {service.technician.avgRating}
+      </span>
+    </div>
+  </div>
+
+  <div className="mt-6 flex items-center justify-between">
+    <span className="font-semibold text-blue-600">
+      Tk. {service.price}
+    </span>
+
+    <button className="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700">
+      View Service
+    </button>
+  </div>
+</div>
+            ))}
           </div>
-        </div>
+        )}
       </section>
     </main>
   );
