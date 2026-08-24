@@ -1,6 +1,24 @@
+"use client";
+
+import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
+import { api } from "@/lib/api";
+
 
 export default function ServicesPage() {
+  useEffect(() => {
+  const testApi = async () => {
+    try {
+      const response = await api.get("/services");
+
+      console.log("Services API response:", response.data);
+    } catch (error) {
+      console.error("Services API error:", error);
+    }
+  };
+
+  testApi();
+}, []);
   return (
     <main className="min-h-screen bg-gray-50">
       <Navbar />
