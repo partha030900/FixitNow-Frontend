@@ -77,3 +77,14 @@ export const createBooking = async (
 
   return response.data.data;
 };
+
+
+export const cancelBooking = async (
+  id: string
+) => {
+  const response = await api.patch(
+    `/bookings/${id}/cancel`
+  );
+
+  return response.data.data;
+};

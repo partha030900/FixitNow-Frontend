@@ -3,11 +3,13 @@
 import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { useBookingById } from "@/hooks/useBookingById";
+import { useCancelBooking } from "@/hooks/useCancelBooking";
 
 export default function BookingDetailsPage() {
   const params = useParams();
   const bookingId = params.id as string;
 
+  const cancelBookingMutation = useCancelBooking();
  const {
   data: booking,
   isLoading,
@@ -146,7 +148,7 @@ export default function BookingDetailsPage() {
             </div>
           </div>
 
-          {/* Technician */}
+          {/* Technician Route */}
           <div className="py-6">
             <h2 className="text-lg font-semibold text-gray-900">
               Technician
@@ -182,6 +184,33 @@ export default function BookingDetailsPage() {
               </p>
             </div>
           </div>
+          {booking.status === "REQUESTED" && (
+  <div className="border-t pt-6">
+    <button
+      onClick={() => {
+        cancelBookingMutation.mutate(booking.id);
+      }}
+      disabled={cancelBookingMutation.isPending}
+      className="w-full rounded-lg bg-red-600 px-6 py-3 font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+    >
+      {cancelBookingMutation.isPending
+        ? "Cancelling..."
+        : "Cancel Booking"}
+    </button>
+
+    {cancelBookingMutation.isSuccess && (
+      <div className="mt-4 rounded-lg bg-green-50 p-4 text-green-700">
+        Booking cancelled successfully!
+      </div>
+    )}
+
+    {cancelBookingMutation.isError && (
+      <div className="mt-4 rounded-lg bg-red-50 p-4 text-red-600">
+        Failed to cancel booking. Please try again.
+      </div>
+    )}
+  </div>
+)}
         </div>
       </section>
     </main>
