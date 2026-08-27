@@ -52,6 +52,18 @@ export const getBookings = async (): Promise<Booking[]> => {
   return response.data.data;
 };
 
+export const getBookingById = async (
+  id: string
+): Promise<Booking> => {
+  const response = await api.get<{
+    success: boolean;
+    message: string;
+    data: Booking;
+  }>(`/bookings/${id}`);
+
+  return response.data.data;
+};
+
 export interface CreateBookingData {
   serviceId: string;
   scheduledAt: string;

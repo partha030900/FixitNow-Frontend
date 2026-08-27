@@ -2,21 +2,17 @@
 
 import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { useBookings } from "@/hooks/useBookings";
+import { useBookingById } from "@/hooks/useBookingById";
 
 export default function BookingDetailsPage() {
   const params = useParams();
   const bookingId = params.id as string;
 
-  const {
-    data: bookings = [],
-    isLoading,
-    isError,
-  } = useBookings();
-
-  const booking = bookings.find(
-    (item) => item.id === bookingId
-  );
+ const {
+  data: booking,
+  isLoading,
+  isError,
+} = useBookingById(bookingId);
 
   if (isLoading) {
     return (
