@@ -1,8 +1,10 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import { useServices } from "@/hooks/useServices";
+import { useCreateBooking } from "@/hooks/useCreateBooking";
 
 export default function ServiceDetailsPage() {
   const params = useParams();
@@ -11,6 +13,9 @@ export default function ServiceDetailsPage() {
   const service = services.find(
     (item) => item.id === params.id
   );
+  const createBookingMutation = useCreateBooking();
+  const [scheduledAt, setScheduledAt] = useState("");
+const [address, setAddress] = useState("");
 
   if (isLoading) {
     return (
@@ -127,21 +132,80 @@ export default function ServiceDetailsPage() {
             </div>
           </div>
 
-          <div className="mt-8 flex items-center justify-between border-t pt-6">
-            <div>
-              <p className="text-sm text-gray-500">
-                Service price
-              </p>
+         <div className="mt-8 border-t pt-6">
+  <div className="flex items-center justify-between">
+    <div>
+      <p className="text-sm text-gray-500">
+        Service price
+      </p>
 
-              <p className="text-2xl font-bold text-blue-600">
-                Tk. {service.price}
-              </p>
-            </div>
+      <p className="text-2xl font-bold text-blue-600">
+        Tk. {service.price}
+      </p>
+    </div>
+  </div>
 
-            <button className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700">
-              Book Now
-            </button>
-          </div>
+  <div className="mt-6 grid gap-4">
+    <div>
+      <label className="mb-2 block text-sm font-medium text-gray-700">
+        Schedule date and time
+      </label>
+
+      <input
+        type="datetime-local"
+        value={scheduledAt}
+        onChange={(e) => setScheduledAt(e.target.value)}
+        className="w-full rounded-lg border px-4 py-3 outline-none focus:border-blue-500"
+      />
+    </div>
+
+    <div>
+      <label className="mb-2 block text-sm font-medium text-gray-700">
+        Service address
+      </label>
+
+      <textarea
+        value={address}
+        onChange={(e) => setAddress(e.target.value)}
+        placeholder="Enter the address where the service is needed"
+        rows={3}
+        className="w-full rounded-lg border px-4 py-3 outline-none focus:border-blue-500"
+      />
+    </div>
+
+    <button
+      onClick={() => {
+        createBookingMutation.mutate({
+          serviceId: service.id,
+          scheduledAt,
+          address,
+        });
+      }}
+     disabled={
+  !scheduledAt ||
+  !address.trim() ||
+  createBookingMutation.isPending
+}
+      className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+    >
+      {createBookingMutation.isPending
+        ? "Booking..."
+        : "Book Now"}
+    </button>
+
+    {createBookingMutation.isSuccess && (
+      <div className="rounded-lg bg-green-50 p-4 text-green-700">
+        Booking created successfully!
+      </div>
+    )}
+
+    {createBookingMutation.isError && (
+      <div className="rounded-lg bg-red-50 p-4 text-red-600">
+        Failed to create booking. Please try again.
+      </div>
+    )}
+  </div>
+</div>
         </div>
       </section>
     </main>
