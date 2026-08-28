@@ -21,6 +21,11 @@ export interface Booking {
     createdAt: string;
     updatedAt: string;
   };
+  customer?: {
+  id: string;
+  name: string;
+  email: string;
+};
 
   technician: {
     id: string;
@@ -84,6 +89,24 @@ export const cancelBooking = async (
 ) => {
   const response = await api.patch(
     `/bookings/${id}/cancel`
+  );
+
+  return response.data.data;
+};
+
+export interface UpdateBookingStatusData {
+  bookingId: string;
+  status: "ACCEPTED" | "DECLINED" | "IN_PROGRESS" | "COMPLETED";
+}
+
+export const updateBookingStatus = async (
+  data: UpdateBookingStatusData
+) => {
+  const response = await api.patch(
+    `/bookings/${data.bookingId}/status`,
+    {
+      status: data.status,
+    }
   );
 
   return response.data.data;

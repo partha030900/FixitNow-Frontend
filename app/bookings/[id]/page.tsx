@@ -4,13 +4,20 @@ import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { useBookingById } from "@/hooks/useBookingById";
 import { useCancelBooking } from "@/hooks/useCancelBooking";
+import { useUpdateBookingStatus } from "@/hooks/useUpdateBookingStatus";
+import { useAuthStore } from "@/store/authStore";
+
 
 export default function BookingDetailsPage() {
   const params = useParams();
   const bookingId = params.id as string;
 
   const cancelBookingMutation = useCancelBooking();
- const {
+  const updateStatusMutation = useUpdateBookingStatus();
+  const user = useAuthStore((state) => state.user);
+
+ 
+  const {
   data: booking,
   isLoading,
   isError,
@@ -149,68 +156,171 @@ export default function BookingDetailsPage() {
           </div>
 
           {/* Technician Route */}
-          <div className="py-6">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Technician
-            </h2>
+          {user?.role === "TECHNICIAN" ? (
+  <div className="py-6">
+    <h2 className="text-lg font-semibold text-gray-900">
+      Customer
+    </h2>
 
-            <div className="mt-4 space-y-2 text-gray-600">
-              <p>
-                <span className="font-medium text-gray-900">
-                  Name:
-                </span>{" "}
-                {booking.technician.user.name}
-              </p>
+    <div className="mt-4 space-y-2 text-gray-600">
+      <p>
+        <span className="font-medium text-gray-900">
+          Name:
+        </span>{" "}
+        {booking.customer?.name || "Unknown customer"}
+      </p>
 
-              <p>
-                <span className="font-medium text-gray-900">
-                  Location:
-                </span>{" "}
-                {booking.technician.location}
-              </p>
+      <p>
+        <span className="font-medium text-gray-900">
+          Email:
+        </span>{" "}
+        {booking.customer?.email || "No email available"}
+      </p>
+    </div>
+  </div>
+) : (
+  <div className="py-6">
+    <h2 className="text-lg font-semibold text-gray-900">
+      Technician
+    </h2>
 
-              <p>
-                <span className="font-medium text-gray-900">
-                  Experience:
-                </span>{" "}
-                {booking.technician.experience} years
-              </p>
+    <div className="mt-4 space-y-2 text-gray-600">
+      <p>
+        <span className="font-medium text-gray-900">
+          Name:
+        </span>{" "}
+        {booking.technician.user.name}
+      </p>
 
-              <p>
-                <span className="font-medium text-gray-900">
-                  Rating:
-                </span>{" "}
-                ⭐ {booking.technician.avgRating}
-              </p>
-            </div>
-          </div>
-          {booking.status === "REQUESTED" && (
+      <p>
+        <span className="font-medium text-gray-900">
+          Location:
+        </span>{" "}
+        {booking.technician.location}
+      </p>
+
+      <p>
+        <span className="font-medium text-gray-900">
+          Experience:
+        </span>{" "}
+        {booking.technician.experience} years
+      </p>
+
+      <p>
+        <span className="font-medium text-gray-900">
+          Rating:
+        </span>{" "}
+        ⭐ {booking.technician.avgRating}
+      </p>
+    </div>
+  </div>
+)}
+
+
+     {user?.role === "TECHNICIAN" ? (
   <div className="border-t pt-6">
-    <button
-      onClick={() => {
-        cancelBookingMutation.mutate(booking.id);
-      }}
-      disabled={cancelBookingMutation.isPending}
-      className="w-full rounded-lg bg-red-600 px-6 py-3 font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-400"
-    >
-      {cancelBookingMutation.isPending
-        ? "Cancelling..."
-        : "Cancel Booking"}
-    </button>
+    {booking.status === "REQUESTED" && (
+      <div className="flex gap-3">
+        <button
+          onClick={() =>
+            updateStatusMutation.mutate({
+              bookingId: booking.id,
+              status: "ACCEPTED",
+            })
+          }
+          disabled={updateStatusMutation.isPending}
+          className="flex-1 rounded-lg bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+        >
+          {updateStatusMutation.isPending
+            ? "Updating..."
+            : "Accept"}
+        </button>
 
-    {cancelBookingMutation.isSuccess && (
-      <div className="mt-4 rounded-lg bg-green-50 p-4 text-green-700">
-        Booking cancelled successfully!
+        <button
+          onClick={() =>
+            updateStatusMutation.mutate({
+              bookingId: booking.id,
+              status: "DECLINED",
+            })
+          }
+          disabled={updateStatusMutation.isPending}
+          className="flex-1 rounded-lg bg-red-600 px-6 py-3 font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+        >
+          Decline
+        </button>
       </div>
     )}
 
-    {cancelBookingMutation.isError && (
+    {booking.status === "ACCEPTED" && (
+      <button
+        onClick={() =>
+          updateStatusMutation.mutate({
+            bookingId: booking.id,
+            status: "IN_PROGRESS",
+          })
+        }
+        disabled={updateStatusMutation.isPending}
+        className="w-full rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+      >
+        {updateStatusMutation.isPending
+          ? "Updating..."
+          : "Mark In Progress"}
+      </button>
+    )}
+
+    {booking.status === "IN_PROGRESS" && (
+      <button
+        onClick={() =>
+          updateStatusMutation.mutate({
+            bookingId: booking.id,
+            status: "COMPLETED",
+          })
+        }
+        disabled={updateStatusMutation.isPending}
+        className="w-full rounded-lg bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+      >
+        {updateStatusMutation.isPending
+          ? "Updating..."
+          : "Mark Completed"}
+      </button>
+    )}
+
+    {updateStatusMutation.isError && (
       <div className="mt-4 rounded-lg bg-red-50 p-4 text-red-600">
-        Failed to cancel booking. Please try again.
+        Failed to update booking status.
       </div>
     )}
   </div>
+) : (
+  booking.status === "REQUESTED" && (
+    <div className="border-t pt-6">
+      <button
+        onClick={() => {
+          cancelBookingMutation.mutate(booking.id);
+        }}
+        disabled={cancelBookingMutation.isPending}
+        className="w-full rounded-lg bg-red-600 px-6 py-3 font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+      >
+        {cancelBookingMutation.isPending
+          ? "Cancelling..."
+          : "Cancel Booking"}
+      </button>
+
+      {cancelBookingMutation.isSuccess && (
+        <div className="mt-4 rounded-lg bg-green-50 p-4 text-green-700">
+          Booking cancelled successfully!
+        </div>
+      )}
+
+      {cancelBookingMutation.isError && (
+        <div className="mt-4 rounded-lg bg-red-50 p-4 text-red-600">
+          Failed to cancel booking. Please try again.
+        </div>
+      )}
+    </div>
+  )
 )}
+
         </div>
       </section>
     </main>
