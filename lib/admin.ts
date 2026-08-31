@@ -113,7 +113,7 @@ export interface AdminCategory {
   id: string;
   name: string;
   description?: string;
-  createdAt?: string;
+  createdAt: string;
 }
 
 interface AdminCategoriesResponse {
@@ -122,12 +122,33 @@ interface AdminCategoriesResponse {
   data: AdminCategory[];
 }
 
+interface CreateCategoryResponse {
+  success: boolean;
+  message: string;
+  data: AdminCategory;
+}
+
 export const getAdminCategories = async (): Promise<
   AdminCategory[]
 > => {
   const response =
     await api.get<AdminCategoriesResponse>(
       "/admin/categories"
+    );
+
+  return response.data.data;
+};
+
+export const createAdminCategory = async (
+  data: {
+    name: string;
+    description?: string;
+  }
+): Promise<AdminCategory> => {
+  const response =
+    await api.post<CreateCategoryResponse>(
+      "/admin/categories",
+      data
     );
 
   return response.data.data;

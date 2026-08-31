@@ -126,6 +126,94 @@ export default function TechnicianDashboardPage() {
           </Link>
         </div>
 
+                {/* =====================================================
+            TECHNICIAN STATISTICS
+        ===================================================== */}
+
+        {(() => {
+          const pendingRequests = bookings.filter(
+            (booking) => booking.status === "REQUESTED"
+          ).length;
+
+          const upcomingJobs = bookings.filter(
+            (booking) =>
+              booking.status === "ACCEPTED" ||
+              booking.status === "PAID" ||
+              booking.status === "IN_PROGRESS"
+          ).length;
+
+          const totalEarnings = bookings.reduce(
+            (total, booking) => {
+              if (
+                booking.status === "COMPLETED" &&
+                booking.payment?.status === "COMPLETED"
+              ) {
+                return (
+                  total +
+                  Number(booking.payment.amount)
+                );
+              }
+
+              return total;
+            },
+            0
+          );
+
+          return (
+            <div className="mt-8 grid gap-6 md:grid-cols-3">
+
+              {/* PENDING REQUESTS */}
+
+              <div className="rounded-xl border bg-white p-6 shadow-sm">
+                <p className="text-sm text-gray-500">
+                  Pending Requests
+                </p>
+
+                <p className="mt-2 text-3xl font-bold text-orange-600">
+                  {pendingRequests}
+                </p>
+
+                <p className="mt-2 text-sm text-gray-500">
+                  Customer requests waiting for your response
+                </p>
+              </div>
+
+              {/* UPCOMING JOBS */}
+
+              <div className="rounded-xl border bg-white p-6 shadow-sm">
+                <p className="text-sm text-gray-500">
+                  Upcoming Jobs
+                </p>
+
+                <p className="mt-2 text-3xl font-bold text-blue-600">
+                  {upcomingJobs}
+                </p>
+
+                <p className="mt-2 text-sm text-gray-500">
+                  Accepted, paid, or in-progress jobs
+                </p>
+              </div>
+
+              {/* TOTAL EARNINGS */}
+
+              <div className="rounded-xl border bg-white p-6 shadow-sm">
+                <p className="text-sm text-gray-500">
+                  Total Earnings
+                </p>
+
+                <p className="mt-2 text-3xl font-bold text-green-600">
+                  Tk. {totalEarnings.toFixed(2)}
+                </p>
+
+                <p className="mt-2 text-sm text-gray-500">
+                  Earnings from completed payments
+                </p>
+              </div>
+
+            </div>
+          );
+        })()}
+
         {/* =====================================================
             BOOKINGS
         ===================================================== */}
