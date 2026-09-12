@@ -76,9 +76,8 @@ export default function TechnicianAvailabilityPage() {
       defaultSchedule
     );
 
-  // =====================================================
-  // LOAD EXISTING AVAILABILITY
-  // =====================================================
+  
+  {/*LOAD EXISTING AVAILABILITY*/}
 
   useEffect(() => {
     if (!profile?.availability) {
@@ -151,9 +150,8 @@ export default function TechnicianAvailabilityPage() {
     setSchedule(existingSchedule);
   }, [profile]);
 
-  // =====================================================
-  // UPDATE ONE DAY
-  // =====================================================
+  //  UPDATE ONE DAY //
+  
 
   const updateDay = (
     dayName: string,
@@ -170,9 +168,7 @@ export default function TechnicianAvailabilityPage() {
     }));
   };
 
-  // =====================================================
-  // SAVE AVAILABILITY
-  // =====================================================
+  {/*SAVE AVAILABILITY*/}
 
   const handleSubmit = (
     e: React.FormEvent<HTMLFormElement>
@@ -194,9 +190,7 @@ export default function TechnicianAvailabilityPage() {
     updateAvailabilityMutation.mutate(slots);
   };
 
-  // =====================================================
-  // LOADING
-  // =====================================================
+  {/*LOADING*/}
 
   if (isLoading) {
     return (
@@ -212,9 +206,7 @@ export default function TechnicianAvailabilityPage() {
     );
   }
 
-  // =====================================================
-  // ERROR
-  // =====================================================
+  {/*ERROR*/}
 
   if (isError || !profile) {
     return (
@@ -230,9 +222,8 @@ export default function TechnicianAvailabilityPage() {
     );
   }
 
-  // =====================================================
-  // PAGE
-  // =====================================================
+  {/*PAGE*/}
+  
 
   return (
     <main className="min-h-screen bg-gray-50">

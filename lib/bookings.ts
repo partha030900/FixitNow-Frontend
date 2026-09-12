@@ -43,6 +43,14 @@ export interface Booking {
       name: string;
     };
   };
+  
+  payment?: {
+  id: string;
+  amount: number;
+  status: string;
+  provider?: string;
+  paidAt?: string | null;
+} | null;
 }
 
 interface BookingsResponse {

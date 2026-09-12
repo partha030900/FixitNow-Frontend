@@ -7,11 +7,28 @@ import { useBookings } from "@/hooks/useBookings";
 import { useUpdateBookingStatus } from "@/hooks/useUpdateBookingStatus";
 import { useMyTechnicianProfile } from "@/hooks/useMyTechnicianProfile";
 import { useTechnicianReviews } from "@/hooks/useTechnicianReviews";
+import { useState } from "react";
 
 export default function TechnicianDashboardPage() {
-  // =====================================================
-  // BOOKINGS
-  // =====================================================
+
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const showToast = (
+    message: string,
+    type: "success" | "error"
+  ) => {
+    setToast({ message, type });
+
+    setTimeout(() => {
+      setToast(null);
+    }, 3000);
+  };
+
+
+  {/* BOOKINGS */ }
 
   const {
     data: bookings = [],
@@ -19,9 +36,8 @@ export default function TechnicianDashboardPage() {
     isError: bookingsError,
   } = useBookings();
 
-  // =====================================================
-  // TECHNICIAN PROFILE
-  // =====================================================
+  {/* TECHNICIAN PROFILE */ }
+
 
   const {
     data: technicianProfile,
@@ -29,29 +45,25 @@ export default function TechnicianDashboardPage() {
     isError: profileError,
   } = useMyTechnicianProfile();
 
-  // =====================================================
-  // UPDATE BOOKING STATUS
-  // =====================================================
+  {/* UPDATE BOOKING STATUS */ }
+
 
   const updateStatusMutation = useUpdateBookingStatus();
 
-  // =====================================================
-  // REVIEWS
-  // =====================================================
-
+  {/* REVIEWS */ }
   const {
     data: reviews = [],
     isLoading: reviewsLoading,
     isError: reviewsError,
   } = useTechnicianReviews(technicianProfile?.id || "");
 
-  // =====================================================
-  // LOADING
-  // =====================================================
+  {/* LOADING */ }
 
   if (bookingsLoading || profileLoading) {
     return (
       <main className="min-h-screen bg-gray-50">
+        
+
         <Navbar />
 
         <div className="mx-auto max-w-7xl px-6 py-12">
@@ -63,9 +75,7 @@ export default function TechnicianDashboardPage() {
     );
   }
 
-  // =====================================================
-  // ERROR
-  // =====================================================
+  {/*ERROR */ }
 
   if (bookingsError || profileError) {
     return (
@@ -83,13 +93,21 @@ export default function TechnicianDashboardPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
+      {toast && (
+          <div
+            className={`fixed right-5 top-5 z-50 rounded-lg px-5 py-3 font-semibold text-white shadow-lg ${toast.type === "success"
+              ? "bg-green-600"
+              : "bg-red-600"
+              }`}
+          >
+            {toast.message}
+          </div>
+        )}
       <Navbar />
 
       <section className="mx-auto max-w-7xl px-6 py-12">
 
-        {/* =====================================================
-            HEADER
-        ===================================================== */}
+        {/* HEADER */}
 
         <div>
           <p className="font-semibold text-blue-600">
@@ -106,9 +124,7 @@ export default function TechnicianDashboardPage() {
           </p>
         </div>
 
-        {/* =====================================================
-            QUICK LINKS
-        ===================================================== */}
+        {/* QUICK LINKS */}
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
@@ -126,9 +142,7 @@ export default function TechnicianDashboardPage() {
           </Link>
         </div>
 
-                {/* =====================================================
-            TECHNICIAN STATISTICS
-        ===================================================== */}
+        {/* TECHNICIAN STATISTICS */}
 
         {(() => {
           const pendingRequests = bookings.filter(
@@ -214,9 +228,7 @@ export default function TechnicianDashboardPage() {
           );
         })()}
 
-        {/* =====================================================
-            BOOKINGS
-        ===================================================== */}
+        {/* BOOKINGS */}
 
         {bookings.length === 0 ? (
           <div className="mt-8 rounded-xl border bg-white p-8 text-center">
@@ -236,9 +248,7 @@ export default function TechnicianDashboardPage() {
                 className="rounded-xl border bg-white p-6 shadow-sm"
               >
 
-                {/* =====================================================
-                    BOOKING HEADER
-                ===================================================== */}
+                {/* BOOKING HEADER */}
 
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -261,27 +271,24 @@ export default function TechnicianDashboardPage() {
                   {/* STATUS */}
 
                   <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      booking.status === "COMPLETED"
-                        ? "bg-gray-100 text-gray-700"
-                        : booking.status === "IN_PROGRESS"
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${booking.status === "COMPLETED"
+                      ? "bg-gray-100 text-gray-700"
+                      : booking.status === "IN_PROGRESS"
                         ? "bg-green-100 text-green-700"
                         : booking.status === "PAID"
-                        ? "bg-purple-100 text-purple-700"
-                        : booking.status === "ACCEPTED"
-                        ? "bg-blue-100 text-blue-700"
-                        : booking.status === "DECLINED"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}
+                          ? "bg-purple-100 text-purple-700"
+                          : booking.status === "ACCEPTED"
+                            ? "bg-blue-100 text-blue-700"
+                            : booking.status === "DECLINED"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-yellow-100 text-yellow-700"
+                      }`}
                   >
                     {booking.status}
                   </span>
                 </div>
 
-                {/* =====================================================
-                    BOOKING INFORMATION
-                ===================================================== */}
+                {/*BOOKING INFORMATION */}
 
                 <div className="mt-6 space-y-3 text-sm text-gray-600">
 
@@ -310,9 +317,7 @@ export default function TechnicianDashboardPage() {
 
                 </div>
 
-                {/* =====================================================
-                    ACTIONS
-                ===================================================== */}
+                {/*ACTIONS*/}
 
                 <div className="mt-6 flex flex-wrap gap-3 border-t pt-5">
 
@@ -331,10 +336,26 @@ export default function TechnicianDashboardPage() {
                     <>
                       <button
                         onClick={() =>
-                          updateStatusMutation.mutate({
-                            bookingId: booking.id,
-                            status: "ACCEPTED",
-                          })
+                          updateStatusMutation.mutate(
+                            {
+                              bookingId: booking.id,
+                              status: "ACCEPTED",
+                            },
+                            {
+                              onSuccess: () => {
+                                showToast(
+                                  "Booking accepted successfully",
+                                  "success"
+                                );
+                              },
+                              onError: () => {
+                                showToast(
+                                  "Failed to accept booking",
+                                  "error"
+                                );
+                              },
+                            }
+                          )
                         }
                         disabled={
                           updateStatusMutation.isPending
@@ -348,10 +369,26 @@ export default function TechnicianDashboardPage() {
 
                       <button
                         onClick={() =>
-                          updateStatusMutation.mutate({
-                            bookingId: booking.id,
-                            status: "DECLINED",
-                          })
+                          updateStatusMutation.mutate(
+                            {
+                              bookingId: booking.id,
+                              status: "DECLINED",
+                            },
+                            {
+                              onSuccess: () => {
+                                showToast(
+                                  "Booking declined successfully",
+                                  "success"
+                                );
+                              },
+                              onError: () => {
+                                showToast(
+                                  "Failed to decline booking",
+                                  "error"
+                                );
+                              },
+                            }
+                          )
                         }
                         disabled={
                           updateStatusMutation.isPending
@@ -365,36 +402,33 @@ export default function TechnicianDashboardPage() {
                     </>
                   )}
 
-                  {/* ACCEPTED */}
 
-                  {booking.status === "ACCEPTED" && (
-                    <button
-                      onClick={() =>
-                        updateStatusMutation.mutate({
-                          bookingId: booking.id,
-                          status: "IN_PROGRESS",
-                        })
-                      }
-                      disabled={
-                        updateStatusMutation.isPending
-                      }
-                      className="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      {updateStatusMutation.isPending
-                        ? "Updating..."
-                        : "Mark In Progress"}
-                    </button>
-                  )}
 
                   {/* PAID */}
 
                   {booking.status === "PAID" && (
                     <button
                       onClick={() =>
-                        updateStatusMutation.mutate({
-                          bookingId: booking.id,
-                          status: "IN_PROGRESS",
-                        })
+                        updateStatusMutation.mutate(
+                          {
+                            bookingId: booking.id,
+                            status: "IN_PROGRESS",
+                          },
+                          {
+                            onSuccess: () => {
+                              showToast(
+                                "Job started successfully",
+                                "success"
+                              );
+                            },
+                            onError: () => {
+                              showToast(
+                                "Failed to start job",
+                                "error"
+                              );
+                            },
+                          }
+                        )
                       }
                       disabled={
                         updateStatusMutation.isPending
@@ -412,10 +446,26 @@ export default function TechnicianDashboardPage() {
                   {booking.status === "IN_PROGRESS" && (
                     <button
                       onClick={() =>
-                        updateStatusMutation.mutate({
-                          bookingId: booking.id,
-                          status: "COMPLETED",
-                        })
+                        updateStatusMutation.mutate(
+                          {
+                            bookingId: booking.id,
+                            status: "COMPLETED",
+                          },
+                          {
+                            onSuccess: () => {
+                              showToast(
+                                "Job completed successfully",
+                                "success"
+                              );
+                            },
+                            onError: () => {
+                              showToast(
+                                "Failed to complete job",
+                                "error"
+                              );
+                            },
+                          }
+                        )
                       }
                       disabled={
                         updateStatusMutation.isPending
@@ -430,23 +480,14 @@ export default function TechnicianDashboardPage() {
 
                 </div>
 
-                {/* UPDATE ERROR */}
 
-                {updateStatusMutation.isError && (
-                  <div className="mt-4 rounded-lg bg-red-50 p-4 text-sm text-red-600">
-                    Failed to update booking status.
-                    Please try again.
-                  </div>
-                )}
 
               </div>
             ))}
           </div>
         )}
 
-        {/* =====================================================
-            CUSTOMER REVIEWS
-        ===================================================== */}
+        {/* CUSTOMER REVIEWS*/}
 
         <div className="mt-12">
 

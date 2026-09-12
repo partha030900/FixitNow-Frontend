@@ -17,21 +17,28 @@ export interface Service {
     createdAt: string;
   };
 
-  technician: {
+ technician: {
+  id: string;
+  userId: string;
+  bio: string;
+  experience: number;
+  skills: string[];
+  location: string;
+  avgRating: number;
+  createdAt: string;
+  updatedAt: string;
+  hourlyRate: number | null;
+
+  availability: {
     id: string;
-    userId: string;
-    bio: string;
-    experience: number;
-    skills: string[];
-    hourlyRate: number | null;
-    location: string;
-    avgRating: number;
-    createdAt: string;
-    updatedAt: string;
-    user: {
-      name: string;
-    };
-  };
+    technicianId: string;
+    dayOfWeek: number;
+    startTime: string;
+    endTime: string;
+  }[];
+
+  user: { name: string };
+}
 }
 
 interface ServicesResponse {

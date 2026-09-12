@@ -1,8 +1,10 @@
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
 
 export default function PaymentCancelledPage() {
   return (
     <main className="min-h-screen bg-gray-50">
+      <Navbar />
       <div className="mx-auto max-w-xl px-6 py-20">
         <div className="rounded-xl border bg-white p-8 text-center shadow-sm">
           <div className="text-5xl">❌</div>

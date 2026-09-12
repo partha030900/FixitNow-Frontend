@@ -7,9 +7,7 @@ import { useMyTechnicianProfile } from "@/hooks/useMyTechnicianProfile";
 import { useUpdateTechnicianProfile } from "@/hooks/useUpdateTechnicianProfile";
 
 export default function TechnicianProfilePage() {
-  // =====================================================
-  // GET TECHNICIAN PROFILE
-  // =====================================================
+  {/* GET TECHNICIAN PROFILE */}
 
   const {
     data: profile,
@@ -17,16 +15,12 @@ export default function TechnicianProfilePage() {
     isError,
   } = useMyTechnicianProfile();
 
-  // =====================================================
-  // UPDATE PROFILE MUTATION
-  // =====================================================
+   {/* UPDATE PROFILE MUTATION */}
 
   const updateProfileMutation =
     useUpdateTechnicianProfile();
 
-  // =====================================================
-  // FORM STATE
-  // =====================================================
+  {/* FORM STATE */}
 
   const [bio, setBio] = useState("");
   const [experience, setExperience] = useState("");
@@ -34,9 +28,7 @@ export default function TechnicianProfilePage() {
   const [hourlyRate, setHourlyRate] = useState("");
   const [location, setLocation] = useState("");
 
-  // =====================================================
-  // LOAD PROFILE INTO FORM
-  // =====================================================
+  {/* LOAD PROFILE INTO FORM */}
 
   useEffect(() => {
     if (!profile) {
@@ -62,9 +54,7 @@ export default function TechnicianProfilePage() {
     setLocation(profile.location || "");
   }, [profile]);
 
-  // =====================================================
-  // SUBMIT FORM
-  // =====================================================
+   {/* SUBMIT FORM */}
 
   const handleSubmit = (
     e: React.FormEvent<HTMLFormElement>
@@ -85,9 +75,7 @@ export default function TechnicianProfilePage() {
     });
   };
 
-  // =====================================================
-  // LOADING
-  // =====================================================
+  {/* LOADING */}
 
   if (isLoading) {
     return (
@@ -103,9 +91,7 @@ export default function TechnicianProfilePage() {
     );
   }
 
-  // =====================================================
-  // ERROR
-  // =====================================================
+  {/* ERROR */}
 
   if (isError || !profile) {
     return (
@@ -121,9 +107,7 @@ export default function TechnicianProfilePage() {
     );
   }
 
-  // =====================================================
-  // PAGE
-  // =====================================================
+  {/* PAGE */}
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -131,9 +115,7 @@ export default function TechnicianProfilePage() {
 
       <section className="mx-auto max-w-4xl px-6 py-12">
 
-        {/* =====================================================
-            HEADER
-        ===================================================== */}
+        {/* HEADER*/}
 
         <div className="mb-8">
           <p className="font-semibold text-blue-600">
@@ -150,18 +132,14 @@ export default function TechnicianProfilePage() {
           </p>
         </div>
 
-        {/* =====================================================
-            PROFILE FORM
-        ===================================================== */}
+        {/* PROFILE FORM*/}
 
         <form
           onSubmit={handleSubmit}
           className="rounded-xl border bg-white p-8 shadow-sm"
         >
 
-          {/* =====================================================
-              BIO
-          ===================================================== */}
+          {/* BIO*/}
 
           <div>
             <label
@@ -188,9 +166,7 @@ export default function TechnicianProfilePage() {
             </p>
           </div>
 
-          {/* =====================================================
-              EXPERIENCE + HOURLY RATE
-          ===================================================== */}
+          {/* EXPERIENCE + HOURLY RATE */}
 
           <div className="mt-6 grid gap-6 sm:grid-cols-2">
 
@@ -254,9 +230,7 @@ export default function TechnicianProfilePage() {
 
           </div>
 
-          {/* =====================================================
-              SKILLS
-          ===================================================== */}
+          {/* SKILLS */}
 
           <div className="mt-6">
             <label
@@ -301,9 +275,7 @@ export default function TechnicianProfilePage() {
             )}
           </div>
 
-          {/* =====================================================
-              LOCATION
-          ===================================================== */}
+          {/* LOCATION*/}
 
           <div className="mt-6">
             <label
@@ -325,9 +297,7 @@ export default function TechnicianProfilePage() {
             />
           </div>
 
-          {/* =====================================================
-              CURRENT RATING
-          ===================================================== */}
+          {/* CURRENT RATING */}
 
           <div className="mt-6 rounded-lg bg-gray-50 p-4">
             <p className="text-sm font-medium text-gray-500">
@@ -353,9 +323,7 @@ export default function TechnicianProfilePage() {
             </p>
           </div>
 
-          {/* =====================================================
-              ERROR MESSAGE
-          ===================================================== */}
+          {/* ERROR MESSAGE*/}
 
           {updateProfileMutation.isError && (
             <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">
@@ -363,9 +331,7 @@ export default function TechnicianProfilePage() {
             </div>
           )}
 
-          {/* =====================================================
-              SUCCESS MESSAGE
-          ===================================================== */}
+          {/* SUCCESS MESSAGE */}
 
           {updateProfileMutation.isSuccess && (
             <div className="mt-6 rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-700">
@@ -373,9 +339,7 @@ export default function TechnicianProfilePage() {
             </div>
           )}
 
-          {/* =====================================================
-              SAVE BUTTON
-          ===================================================== */}
+          {/* SAVE BUTTON*/}
 
           <button
             type="submit"
@@ -389,9 +353,7 @@ export default function TechnicianProfilePage() {
 
         </form>
 
-        {/* =====================================================
-            PROFILE INFORMATION
-        ===================================================== */}
+        {/* PROFILE INFORMATION */}
 
         <div className="mt-8 rounded-xl border bg-white p-6 shadow-sm">
 

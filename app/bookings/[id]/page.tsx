@@ -11,6 +11,7 @@ import { useCreatePayment } from "@/hooks/useCreatePayment";
 import { useAuthStore } from "@/store/authStore";
 import { useState } from "react";
 import { useCreateReview } from "@/hooks/useCreateReview";
+import BookingDetailsSkeleton from "@/components/BookingDetailsSkeleton";
 
 export default function BookingDetailsPage() {
   const params = useParams();
@@ -32,26 +33,20 @@ const [comment, setComment] = useState("");
     isError,
   } = useBookingById(bookingId);
 
-  /*
-   * Loading state
-   */
-  if (isLoading) {
-    return (
-      <main className="min-h-screen bg-gray-50">
-        <Navbar />
+  {/*Loading state*/}
+ if (isLoading) {
+  return (
+    <main className="min-h-screen bg-gray-50">
+      <Navbar />
 
-        <div className="mx-auto max-w-4xl px-6 py-12">
-          <p className="text-gray-600">
-            Loading booking...
-          </p>
-        </div>
-      </main>
-    );
-  }
+      <div className="mx-auto max-w-4xl px-6 py-12">
+        <BookingDetailsSkeleton />
+      </div>
+    </main>
+  );
+}
 
-  /*
-   * Error state
-   */
+  /*Error state */
   if (isError) {
     return (
       <main className="min-h-screen bg-gray-50">
@@ -66,9 +61,7 @@ const [comment, setComment] = useState("");
     );
   }
 
-  /*
-   * Booking not found
-   */
+  {/*Booking not found*/}
   if (!booking) {
     return (
       <main className="min-h-screen bg-gray-50">
@@ -105,9 +98,7 @@ const [comment, setComment] = useState("");
 
         <div className="mt-8 rounded-xl border bg-white p-8 shadow-sm">
 
-          {/* =========================================================
-              BOOKING STATUS + PRICE
-          ========================================================= */}
+          {/*BOOKING STATUS + PRICE */}
 
           <div className="flex items-center justify-between border-b pb-6">
             <div>
@@ -149,9 +140,7 @@ const [comment, setComment] = useState("");
             </div>
           </div>
 
-          {/* =========================================================
-              SERVICE
-          ========================================================= */}
+          {/* SERVICE*/}
 
           <div className="border-b py-6">
             <h2 className="text-lg font-semibold text-gray-900">
@@ -163,9 +152,7 @@ const [comment, setComment] = useState("");
             </p>
           </div>
 
-          {/* =========================================================
-              SCHEDULE
-          ========================================================= */}
+          {/* SCHEDULE */}
 
           <div className="grid gap-6 border-b py-6 sm:grid-cols-2">
             <div>
@@ -191,14 +178,11 @@ const [comment, setComment] = useState("");
             </div>
           </div>
 
-          {/* =========================================================
-              USER-SPECIFIC DETAILS
-          ========================================================= */}
+          {/* USER-SPECIFIC DETAILS */}
 
           {user?.role === "TECHNICIAN" ? (
-            /*
-             * Technician sees CUSTOMER information
-             */
+           
+           /*Technician sees CUSTOMER information*/
             <div className="py-6">
               <h2 className="text-lg font-semibold text-gray-900">
                 Customer
@@ -223,9 +207,7 @@ const [comment, setComment] = useState("");
               </div>
             </div>
           ) : (
-            /*
-             * Customer sees TECHNICIAN information
-             */
+            /*Customer sees TECHNICIAN information*/
             <div className="py-6">
               <h2 className="text-lg font-semibold text-gray-900">
                 Technician
@@ -263,16 +245,11 @@ const [comment, setComment] = useState("");
             </div>
           )}
 
-          {/* =========================================================
-              ACTIONS
-          ========================================================= */}
+          {/* ACTIONS */}
 
           {user?.role === "TECHNICIAN" ? (
-            /*
-             * =======================================================
-             * TECHNICIAN ACTIONS
-             * =======================================================
-             */
+            
+            /* TECHNICIAN ACTIONS*/
             <div className="border-t pt-6">
 
               {/* REQUESTED → ACCEPT / DECLINE */}
@@ -365,16 +342,10 @@ const [comment, setComment] = useState("");
               )}
             </div>
           ) : (
-            /*
-             * =======================================================
-             * CUSTOMER ACTIONS
-             * =======================================================
-             */
+            /* CUSTOMER ACTIONS*/
             <div className="border-t pt-6">
 
-              {/* =====================================================
-                  REQUESTED → CANCEL BOOKING
-              ===================================================== */}
+              /* REQUESTED → CANCEL BOOKING*/
 
               {booking.status === "REQUESTED" && (
                 <>
@@ -450,9 +421,7 @@ const [comment, setComment] = useState("");
                 </div>
               )}
 
-              {/* =====================================================
-                  IN PROGRESS
-              ===================================================== */}
+              {/* IN PROGRESS*/}
 
               {booking.status === "IN_PROGRESS" && (
                 <div className="rounded-lg bg-green-50 p-4 text-green-700">
@@ -460,13 +429,9 @@ const [comment, setComment] = useState("");
                 </div>
               )}
 
-              {/* =====================================================
-                  COMPLETED
-              ===================================================== */}
+              {/* COMPLETED */}
 
-             {/* =====================================================
-    COMPLETED
-===================================================== */}
+             
 
 {booking.status === "COMPLETED" && (
   <div className="border-t pt-6">
@@ -556,9 +521,7 @@ const [comment, setComment] = useState("");
   </div>
 )}
 
-              {/* =====================================================
-                  DECLINED
-              ===================================================== */}
+              {/* DECLINED*/}
 
               {booking.status === "DECLINED" && (
                 <div className="rounded-lg bg-red-50 p-4 text-red-700">
@@ -566,9 +529,7 @@ const [comment, setComment] = useState("");
                 </div>
               )}
 
-              {/* =====================================================
-                  CANCELLED
-              ===================================================== */}
+              {/* CANCELLED */}
 
               {booking.status === "CANCELLED" && (
                 <div className="rounded-lg bg-red-50 p-4 text-red-800">

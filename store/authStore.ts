@@ -16,17 +16,33 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       accessToken: null,
 
-      setAuth: (user, accessToken) =>
+      setAuth: (user, accessToken) => {
         set({
           user,
           accessToken,
-        }),
+        });
 
-      logout: () =>
+        // Store the user's role in a cookie
+        // so Next.js middleware can read it.
+        if (typeof document !== "undefined") {
+          document.cookie = `fixitnow-role=${encodeURIComponent(
+            user.role
+          )}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+        }
+      },
+
+      logout: () => {
         set({
           user: null,
           accessToken: null,
-        }),
+        });
+
+        // Remove the role cookie
+        if (typeof document !== "undefined") {
+          document.cookie =
+            "fixitnow-role=; path=/; max-age=0; SameSite=Lax";
+        }
+      },
     }),
     {
       name: "fixitnow-auth",
