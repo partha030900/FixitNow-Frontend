@@ -390,9 +390,11 @@ export default function AdminDashboard() {
                                   : "bg-green-600 hover:bg-green-700"
                                   }`}
                               >
-                                {user.status === "ACTIVE"
-                                  ? "Ban"
-                                  : "Unban"}
+                                {updateUserStatusMutation.isPending
+                                  ? "Updating..."
+                                  : user.status === "ACTIVE"
+                                    ? "Ban"
+                                    : "Unban"}
                               </button>
                             )}
 
