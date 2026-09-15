@@ -5,30 +5,32 @@ import Navbar from "@/components/Navbar";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
 import { useUpdateUserStatus } from "@/hooks/useUpdateUserStatus";
 import { useAdminBookings } from "@/hooks/useAdminBookings";
+import { getApiErrorMessage } from "@/lib/error";
 
 export default function AdminDashboard() {
   const [search, setSearch] = useState("");
-const [roleFilter, setRoleFilter] = useState("");
-const [currentPage, setCurrentPage] = useState(1);
+  const [roleFilter, setRoleFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const {
     data: users = [],
     isLoading,
     isError,
+    error: usersError,
   } = useAdminUsers(roleFilter || undefined);
 
   const {
-  data: bookings = [],
-  isLoading: bookingsLoading,
-  isError: bookingsError,
-} = useAdminBookings();
+    data: bookings = [],
+    isLoading: bookingsLoading,
+    isError: bookingsError,
+    error: bookingsQueryError,
+  } = useAdminBookings();
+
 
   const updateUserStatusMutation =
     useUpdateUserStatus();
 
-  /*
-   * SEARCH USERS
-   */
+  /*SEARCH USERS*/
 
   const filteredUsers = useMemo(() => {
     const searchValue = search.toLowerCase().trim();
@@ -45,24 +47,22 @@ const [currentPage, setCurrentPage] = useState(1);
   }, [users, search]);
   const usersPerPage = 5;
 
-const totalPages = Math.ceil(
-  filteredUsers.length / usersPerPage
-);
+  const totalPages = Math.ceil(
+    filteredUsers.length / usersPerPage
+  );
 
-const startIndex =
-  (currentPage - 1) * usersPerPage;
+  const startIndex =
+    (currentPage - 1) * usersPerPage;
 
-const paginatedUsers = filteredUsers.slice(
-  startIndex,
-  startIndex + usersPerPage
-);
-useEffect(() => {
-  setCurrentPage(1);
-}, [search, roleFilter]);
+  const paginatedUsers = filteredUsers.slice(
+    startIndex,
+    startIndex + usersPerPage
+  );
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, roleFilter]);
 
-  /*
-   * STATISTICS
-   */
+  /*STATISTICS*/
 
   const totalUsers = users.length;
 
@@ -83,32 +83,30 @@ useEffect(() => {
   ).length;
 
   const activeBookings = bookings.filter(
-  (booking) =>
-    booking.status === "ACCEPTED" ||
-    booking.status === "PAID" ||
-    booking.status === "IN_PROGRESS"
-).length;
+    (booking) =>
+      booking.status === "ACCEPTED" ||
+      booking.status === "PAID" ||
+      booking.status === "IN_PROGRESS"
+  ).length;
 
-const completedBookings = bookings.filter(
-  (booking) => booking.status === "COMPLETED"
-).length;
+  const completedBookings = bookings.filter(
+    (booking) => booking.status === "COMPLETED"
+  ).length;
 
-const totalRevenue = bookings.reduce(
-  (total, booking) => {
-    if (
-      booking.payment?.status === "COMPLETED"
-    ) {
-      return total + Number(booking.payment.amount);
-    }
+  const totalRevenue = bookings.reduce(
+    (total, booking) => {
+      if (
+        booking.payment?.status === "COMPLETED"
+      ) {
+        return total + Number(booking.payment.amount);
+      }
 
-    return total;
-  },
-  0
-);
+      return total;
+    },
+    0
+  );
 
-  /*
-   * BAN / UNBAN
-   */
+  /* BAN/UNBAN */
 
   const handleStatusChange = (
     id: string,
@@ -230,7 +228,7 @@ const totalRevenue = bookings.reduce(
               onChange={(e) =>
                 setSearch(e.target.value)
               }
-              className="w-full rounded-lg border border-gray-400 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-500 outline-none focus:border-blue-500 sm:flex-1"/>
+              className="w-full rounded-lg border border-gray-400 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-500 outline-none focus:border-blue-500 sm:flex-1" />
 
             {/* ROLE FILTER */}
 
@@ -274,7 +272,10 @@ const totalRevenue = bookings.reduce(
 
           {isError && (
             <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-600">
-              Failed to load users. Please try again.
+              {getApiErrorMessage(
+                usersError,
+                "Failed to load users. Please try again."
+              )}
             </div>
           )}
 
@@ -352,11 +353,10 @@ const totalRevenue = bookings.reduce(
 
                           <td className="px-6 py-4">
                             <span
-                              className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                                user.status === "ACTIVE"
-                                  ? "bg-green-100 text-green-700"
-                                  : "bg-red-100 text-red-700"
-                              }`}
+                              className={`rounded-full px-3 py-1 text-xs font-semibold ${user.status === "ACTIVE"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
+                                }`}
                             >
                               {user.status}
                             </span>
@@ -385,11 +385,10 @@ const totalRevenue = bookings.reduce(
                                 disabled={
                                   updateUserStatusMutation.isPending
                                 }
-                                className={`rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 ${
-                                  user.status === "ACTIVE"
-                                    ? "bg-red-600 hover:bg-red-700"
-                                    : "bg-green-600 hover:bg-green-700"
-                                }`}
+                                className={`rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 ${user.status === "ACTIVE"
+                                  ? "bg-red-600 hover:bg-red-700"
+                                  : "bg-green-600 hover:bg-green-700"
+                                  }`}
                               >
                                 {user.status === "ACTIVE"
                                   ? "Ban"
@@ -475,272 +474,272 @@ const totalRevenue = bookings.reduce(
 
           {/* PLATFORM STATISTICS */}
 
-<div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
-  <div className="rounded-xl border bg-white p-6 shadow-sm">
-    <p className="text-sm text-gray-500">
-      Active Bookings
-    </p>
+            <div className="rounded-xl border bg-white p-6 shadow-sm">
+              <p className="text-sm text-gray-500">
+                Active Bookings
+              </p>
 
-    <p className="mt-2 text-3xl font-bold text-orange-600">
-      {bookingsLoading ? "..." : activeBookings}
-    </p>
+              <p className="mt-2 text-3xl font-bold text-orange-600">
+                {bookingsLoading ? "..." : activeBookings}
+              </p>
 
-    <p className="mt-2 text-sm text-gray-500">
-      Accepted, paid, or in-progress jobs
-    </p>
-  </div>
+              <p className="mt-2 text-sm text-gray-500">
+                Accepted, paid, or in-progress jobs
+              </p>
+            </div>
 
-  <div className="rounded-xl border bg-white p-6 shadow-sm">
-    <p className="text-sm text-gray-500">
-      Completed Bookings
-    </p>
+            <div className="rounded-xl border bg-white p-6 shadow-sm">
+              <p className="text-sm text-gray-500">
+                Completed Bookings
+              </p>
 
-    <p className="mt-2 text-3xl font-bold text-green-600">
-      {bookingsLoading ? "..." : completedBookings}
-    </p>
+              <p className="mt-2 text-3xl font-bold text-green-600">
+                {bookingsLoading ? "..." : completedBookings}
+              </p>
 
-    <p className="mt-2 text-sm text-gray-500">
-      Successfully completed jobs
-    </p>
-  </div>
+              <p className="mt-2 text-sm text-gray-500">
+                Successfully completed jobs
+              </p>
+            </div>
 
-  <div className="rounded-xl border bg-white p-6 shadow-sm">
-    <p className="text-sm text-gray-500">
-      Platform Revenue
-    </p>
+            <div className="rounded-xl border bg-white p-6 shadow-sm">
+              <p className="text-sm text-gray-500">
+                Platform Revenue
+              </p>
 
-    <p className="mt-2 text-3xl font-bold text-purple-600">
-      {bookingsLoading
-        ? "..."
-        : `Tk. ${totalRevenue.toFixed(2)}`}
-    </p>
+              <p className="mt-2 text-3xl font-bold text-purple-600">
+                {bookingsLoading
+                  ? "..."
+                  : `Tk. ${totalRevenue.toFixed(2)}`}
+              </p>
 
-    <p className="mt-2 text-sm text-gray-500">
-      From completed payments
-    </p>
-  </div>
+              <p className="mt-2 text-sm text-gray-500">
+                From completed payments
+              </p>
+            </div>
 
-</div>
-{/* BOOKING MANAGEMENT */}
+          </div>
+          {/* BOOKING MANAGEMENT */}
 
-<div className="mt-12">
+          <div className="mt-12">
 
-  <div className="mb-6">
-    <h2 className="text-2xl font-bold text-gray-900">
-      Platform Bookings
-    </h2>
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">
+                Platform Bookings
+              </h2>
 
-    <p className="mt-2 text-gray-600">
-      Monitor all customer bookings across the platform.
-    </p>
-  </div>
+              <p className="mt-2 text-gray-600">
+                Monitor all customer bookings across the platform.
+              </p>
+            </div>
 
-  {/* ERROR */}
+            {/* ERROR */}
 
-  {bookingsError && (
-    <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-600">
-      Failed to load platform bookings. Please try again.
-    </div>
-  )}
+            {bookingsError && (
+              <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-600">
+                {getApiErrorMessage(
+                  bookingsQueryError,
+                  "Failed to load platform bookings. Please try again."
+                )}
+              </div>
+            )}
+            {/* LOADING */}
 
-  {/* LOADING */}
+            {bookingsLoading && (
+              <div className="rounded-xl border bg-white p-10 text-center">
+                <p className="text-gray-600">
+                  Loading bookings...
+                </p>
+              </div>
+            )}
 
-  {bookingsLoading && (
-    <div className="rounded-xl border bg-white p-10 text-center">
-      <p className="text-gray-600">
-        Loading bookings...
-      </p>
-    </div>
-  )}
+            {/* NO BOOKINGS */}
 
-  {/* NO BOOKINGS */}
+            {!bookingsLoading &&
+              !bookingsError &&
+              bookings.length === 0 && (
+                <div className="rounded-xl border bg-white p-10 text-center">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    No bookings found
+                  </h3>
 
-  {!bookingsLoading &&
-    !bookingsError &&
-    bookings.length === 0 && (
-      <div className="rounded-xl border bg-white p-10 text-center">
-        <h3 className="text-lg font-semibold text-gray-900">
-          No bookings found
-        </h3>
-
-        <p className="mt-2 text-gray-600">
-          There are currently no bookings on the platform.
-        </p>
-      </div>
-    )}
-
-  {/* BOOKINGS TABLE */}
-
-  {!bookingsLoading &&
-    !bookingsError &&
-    bookings.length > 0 && (
-      <div className="overflow-x-auto rounded-xl border bg-white shadow-sm">
-
-        <table className="w-full text-left">
-
-          <thead className="border-b bg-gray-50">
-
-            <tr>
-
-              <th className="px-6 py-4 text-sm font-semibold text-gray-900">
-                Service
-              </th>
-
-              <th className="px-6 py-4 text-sm font-semibold text-gray-900">
-                Customer
-              </th>
-
-              <th className="px-6 py-4 text-sm font-semibold text-gray-900">
-                Technician
-              </th>
-
-              <th className="px-6 py-4 text-sm font-semibold text-gray-900">
-                Scheduled
-              </th>
-
-              <th className="px-6 py-4 text-sm font-semibold text-gray-900">
-                Status
-              </th>
-
-              <th className="px-6 py-4 text-sm font-semibold text-gray-900">
-                Payment
-              </th>
-
-            </tr>
-
-          </thead>
-
-          <tbody className="divide-y">
-
-            {bookings.map((booking) => (
-
-              <tr key={booking.id}>
-
-                {/* SERVICE */}
-
-                <td className="px-6 py-4">
-
-                  <p className="font-medium text-gray-900">
-                    {booking.service.title}
+                  <p className="mt-2 text-gray-600">
+                    There are currently no bookings on the platform.
                   </p>
+                </div>
+              )}
 
-                  <p className="mt-1 text-sm text-gray-500">
-                    Tk. {booking.service.price}
-                  </p>
+            {/* BOOKINGS TABLE */}
 
-                </td>
+            {!bookingsLoading &&
+              !bookingsError &&
+              bookings.length > 0 && (
+                <div className="overflow-x-auto rounded-xl border bg-white shadow-sm">
 
-                {/* CUSTOMER */}
+                  <table className="w-full text-left">
 
-                <td className="px-6 py-4">
+                    <thead className="border-b bg-gray-50">
 
-                  <p className="font-medium text-gray-900">
-                    {booking.customer.name}
-                  </p>
+                      <tr>
 
-                  <p className="mt-1 text-sm text-gray-500">
-                    {booking.customer.email}
-                  </p>
+                        <th className="px-6 py-4 text-sm font-semibold text-gray-900">
+                          Service
+                        </th>
 
-                </td>
+                        <th className="px-6 py-4 text-sm font-semibold text-gray-900">
+                          Customer
+                        </th>
 
-                {/* TECHNICIAN */}
+                        <th className="px-6 py-4 text-sm font-semibold text-gray-900">
+                          Technician
+                        </th>
 
-                <td className="px-6 py-4">
+                        <th className="px-6 py-4 text-sm font-semibold text-gray-900">
+                          Scheduled
+                        </th>
 
-                  <p className="font-medium text-gray-900">
-                    {booking.technician.user.name}
-                  </p>
+                        <th className="px-6 py-4 text-sm font-semibold text-gray-900">
+                          Status
+                        </th>
 
-                  <p className="mt-1 text-sm text-gray-500">
-                    {booking.technician.location}
-                  </p>
+                        <th className="px-6 py-4 text-sm font-semibold text-gray-900">
+                          Payment
+                        </th>
 
-                </td>
+                      </tr>
 
-                {/* SCHEDULED */}
+                    </thead>
 
-                <td className="px-6 py-4 text-sm text-gray-600">
+                    <tbody className="divide-y">
 
-                  {new Date(
-                    booking.scheduledAt
-                  ).toLocaleString()}
+                      {bookings.map((booking) => (
 
-                </td>
+                        <tr key={booking.id}>
 
-                {/* STATUS */}
+                          {/* SERVICE */}
 
-                <td className="px-6 py-4">
+                          <td className="px-6 py-4">
 
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      booking.status === "COMPLETED"
-                        ? "bg-gray-100 text-gray-700"
-                        : booking.status === "IN_PROGRESS"
-                        ? "bg-green-100 text-green-700"
-                        : booking.status === "PAID"
-                        ? "bg-purple-100 text-purple-700"
-                        : booking.status === "ACCEPTED"
-                        ? "bg-blue-100 text-blue-700"
-                        : booking.status === "DECLINED"
-                        ? "bg-red-100 text-red-700"
-                        : booking.status === "CANCELLED"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}
-                  >
-                    {booking.status}
-                  </span>
+                            <p className="font-medium text-gray-900">
+                              {booking.service.title}
+                            </p>
 
-                </td>
+                            <p className="mt-1 text-sm text-gray-500">
+                              Tk. {booking.service.price}
+                            </p>
 
-                {/* PAYMENT */}
+                          </td>
 
-                <td className="px-6 py-4">
+                          {/* CUSTOMER */}
 
-                  {booking.payment ? (
-                    <div>
+                          <td className="px-6 py-4">
 
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                          booking.payment.status ===
-                          "COMPLETED"
-                            ? "bg-green-100 text-green-700"
-                            : booking.payment.status ===
-                              "PENDING"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-red-100 text-red-700"
-                        }`}
-                      >
-                        {booking.payment.status}
-                      </span>
+                            <p className="font-medium text-gray-900">
+                              {booking.customer.name}
+                            </p>
 
-                      <p className="mt-2 text-sm text-gray-500">
-                        Tk. {booking.payment.amount}
-                      </p>
+                            <p className="mt-1 text-sm text-gray-500">
+                              {booking.customer.email}
+                            </p>
 
-                    </div>
-                  ) : (
-                    <span className="text-sm text-gray-400">
-                      No payment
-                    </span>
-                  )}
+                          </td>
 
-                </td>
+                          {/* TECHNICIAN */}
 
-              </tr>
+                          <td className="px-6 py-4">
 
-            ))}
+                            <p className="font-medium text-gray-900">
+                              {booking.technician.user.name}
+                            </p>
 
-          </tbody>
+                            <p className="mt-1 text-sm text-gray-500">
+                              {booking.technician.location}
+                            </p>
 
-        </table>
+                          </td>
 
-      </div>
-    )}
+                          {/* SCHEDULED */}
 
-</div>
+                          <td className="px-6 py-4 text-sm text-gray-600">
+
+                            {new Date(
+                              booking.scheduledAt
+                            ).toLocaleString()}
+
+                          </td>
+
+                          {/* STATUS */}
+
+                          <td className="px-6 py-4">
+
+                            <span
+                              className={`rounded-full px-3 py-1 text-xs font-semibold ${booking.status === "COMPLETED"
+                                ? "bg-gray-100 text-gray-700"
+                                : booking.status === "IN_PROGRESS"
+                                  ? "bg-green-100 text-green-700"
+                                  : booking.status === "PAID"
+                                    ? "bg-purple-100 text-purple-700"
+                                    : booking.status === "ACCEPTED"
+                                      ? "bg-blue-100 text-blue-700"
+                                      : booking.status === "DECLINED"
+                                        ? "bg-red-100 text-red-700"
+                                        : booking.status === "CANCELLED"
+                                          ? "bg-red-100 text-red-700"
+                                          : "bg-yellow-100 text-yellow-700"
+                                }`}
+                            >
+                              {booking.status}
+                            </span>
+
+                          </td>
+
+                          {/* PAYMENT */}
+
+                          <td className="px-6 py-4">
+
+                            {booking.payment ? (
+                              <div>
+
+                                <span
+                                  className={`rounded-full px-3 py-1 text-xs font-semibold ${booking.payment.status ===
+                                    "COMPLETED"
+                                    ? "bg-green-100 text-green-700"
+                                    : booking.payment.status ===
+                                      "PENDING"
+                                      ? "bg-yellow-100 text-yellow-700"
+                                      : "bg-red-100 text-red-700"
+                                    }`}
+                                >
+                                  {booking.payment.status}
+                                </span>
+
+                                <p className="mt-2 text-sm text-gray-500">
+                                  Tk. {booking.payment.amount}
+                                </p>
+
+                              </div>
+                            ) : (
+                              <span className="text-sm text-gray-400">
+                                No payment
+                              </span>
+                            )}
+
+                          </td>
+
+                        </tr>
+
+                      ))}
+
+                    </tbody>
+
+                  </table>
+
+                </div>
+              )}
+
+          </div>
 
         </div>
 
