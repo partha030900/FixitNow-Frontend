@@ -48,9 +48,9 @@ export const updateUserStatus = async (
 
   return response.data.data;
 };
-// =====================================================
-// ADMIN BOOKINGS
-// =====================================================
+
+/* ADMIN BOOKINGS */
+
 
 export interface AdminBooking {
   id: string;
@@ -105,9 +105,8 @@ export const getAdminBookings = async (): Promise<
 };
 
 
-// =====================================================
-// ADMIN CATEGORIES
-// =====================================================
+
+/* ADMIN CATEGORIES */
 
 export interface AdminCategory {
   id: string;

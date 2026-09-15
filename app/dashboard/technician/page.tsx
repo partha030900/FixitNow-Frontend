@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-
 import { useBookings } from "@/hooks/useBookings";
 import { useUpdateBookingStatus } from "@/hooks/useUpdateBookingStatus";
 import { useMyTechnicianProfile } from "@/hooks/useMyTechnicianProfile";
 import { useTechnicianReviews } from "@/hooks/useTechnicianReviews";
 import { useState } from "react";
+import { getApiErrorMessage } from "@/lib/error";
 
 export default function TechnicianDashboardPage() {
 
@@ -34,6 +34,7 @@ export default function TechnicianDashboardPage() {
     data: bookings = [],
     isLoading: bookingsLoading,
     isError: bookingsError,
+    error: bookingsErrorMessage,
   } = useBookings();
 
   {/* TECHNICIAN PROFILE */ }
@@ -43,6 +44,7 @@ export default function TechnicianDashboardPage() {
     data: technicianProfile,
     isLoading: profileLoading,
     isError: profileError,
+    error: profileErrorMessage,
   } = useMyTechnicianProfile();
 
   {/* UPDATE BOOKING STATUS */ }
@@ -55,14 +57,16 @@ export default function TechnicianDashboardPage() {
     data: reviews = [],
     isLoading: reviewsLoading,
     isError: reviewsError,
+    error: reviewsErrorMessage,
   } = useTechnicianReviews(technicianProfile?.id || "");
+
 
   {/* LOADING */ }
 
   if (bookingsLoading || profileLoading) {
     return (
       <main className="min-h-screen bg-gray-50">
-        
+
 
         <Navbar />
 
@@ -84,7 +88,10 @@ export default function TechnicianDashboardPage() {
 
         <div className="mx-auto max-w-7xl px-6 py-12">
           <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-600">
-            Failed to load technician dashboard.
+            {getApiErrorMessage(
+              bookingsErrorMessage || profileErrorMessage,
+              "Failed to load technician dashboard. Please try again."
+            )}
           </div>
         </div>
       </main>
@@ -94,15 +101,15 @@ export default function TechnicianDashboardPage() {
   return (
     <main className="min-h-screen bg-gray-50">
       {toast && (
-          <div
-            className={`fixed right-5 top-5 z-50 rounded-lg px-5 py-3 font-semibold text-white shadow-lg ${toast.type === "success"
-              ? "bg-green-600"
-              : "bg-red-600"
-              }`}
-          >
-            {toast.message}
-          </div>
-        )}
+        <div
+          className={`fixed right-5 top-5 z-50 rounded-lg px-5 py-3 font-semibold text-white shadow-lg ${toast.type === "success"
+            ? "bg-green-600"
+            : "bg-red-600"
+            }`}
+        >
+          {toast.message}
+        </div>
+      )}
       <Navbar />
 
       <section className="mx-auto max-w-7xl px-6 py-12">
@@ -348,9 +355,12 @@ export default function TechnicianDashboardPage() {
                                   "success"
                                 );
                               },
-                              onError: () => {
+                              onError: (error) => {
                                 showToast(
-                                  "Failed to accept booking",
+                                  getApiErrorMessage(
+                                    error,
+                                    "Failed to accept booking. Please try again."
+                                  ),
                                   "error"
                                 );
                               },
@@ -381,9 +391,12 @@ export default function TechnicianDashboardPage() {
                                   "success"
                                 );
                               },
-                              onError: () => {
+                              onError: (error) => {
                                 showToast(
-                                  "Failed to decline booking",
+                                  getApiErrorMessage(
+                                    error,
+                                    "Failed to decline booking. Please try again."
+                                  ),
                                   "error"
                                 );
                               },
@@ -421,9 +434,12 @@ export default function TechnicianDashboardPage() {
                                 "success"
                               );
                             },
-                            onError: () => {
+                            onError: (error) => {
                               showToast(
-                                "Failed to start job",
+                                getApiErrorMessage(
+                                  error,
+                                  "Failed to start job. Please try again."
+                                ),
                                 "error"
                               );
                             },
@@ -512,11 +528,13 @@ export default function TechnicianDashboardPage() {
           )}
 
           {reviewsError && (
-            <div className="mt-6 rounded-xl border border-red-200 bg-red-50 p-6 text-red-600">
-              Failed to load reviews.
-            </div>
+            <p className="text-red-500">
+              {getApiErrorMessage(
+                reviewsErrorMessage,
+                "Failed to load reviews. Please try again."
+              )}
+            </p>
           )}
-
           {!reviewsLoading &&
             !reviewsError &&
             reviews.length === 0 && (

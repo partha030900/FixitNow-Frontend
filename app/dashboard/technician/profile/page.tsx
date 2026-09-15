@@ -2,25 +2,27 @@
 
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
-
 import { useMyTechnicianProfile } from "@/hooks/useMyTechnicianProfile";
 import { useUpdateTechnicianProfile } from "@/hooks/useUpdateTechnicianProfile";
+import { getApiErrorMessage } from "@/lib/error";
+
 
 export default function TechnicianProfilePage() {
-  {/* GET TECHNICIAN PROFILE */}
+  {/* GET TECHNICIAN PROFILE */ }
 
   const {
     data: profile,
     isLoading,
     isError,
+    error,
   } = useMyTechnicianProfile();
 
-   {/* UPDATE PROFILE MUTATION */}
+  {/* UPDATE PROFILE MUTATION */ }
 
   const updateProfileMutation =
     useUpdateTechnicianProfile();
 
-  {/* FORM STATE */}
+  {/* FORM STATE */ }
 
   const [bio, setBio] = useState("");
   const [experience, setExperience] = useState("");
@@ -28,7 +30,7 @@ export default function TechnicianProfilePage() {
   const [hourlyRate, setHourlyRate] = useState("");
   const [location, setLocation] = useState("");
 
-  {/* LOAD PROFILE INTO FORM */}
+  {/* LOAD PROFILE INTO FORM */ }
 
   useEffect(() => {
     if (!profile) {
@@ -54,7 +56,7 @@ export default function TechnicianProfilePage() {
     setLocation(profile.location || "");
   }, [profile]);
 
-   {/* SUBMIT FORM */}
+  {/* SUBMIT FORM */ }
 
   const handleSubmit = (
     e: React.FormEvent<HTMLFormElement>
@@ -75,7 +77,7 @@ export default function TechnicianProfilePage() {
     });
   };
 
-  {/* LOADING */}
+  {/* LOADING */ }
 
   if (isLoading) {
     return (
@@ -91,7 +93,7 @@ export default function TechnicianProfilePage() {
     );
   }
 
-  {/* ERROR */}
+  {/* ERROR */ }
 
   if (isError || !profile) {
     return (
@@ -100,14 +102,17 @@ export default function TechnicianProfilePage() {
 
         <div className="mx-auto max-w-4xl px-6 py-12">
           <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-600">
-            Failed to load technician profile.
+            {getApiErrorMessage(
+              error,
+              "Failed to load technician profile. Please try again."
+            )}
           </div>
         </div>
       </main>
     );
   }
 
-  {/* PAGE */}
+  {/* PAGE */ }
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -327,10 +332,12 @@ export default function TechnicianProfilePage() {
 
           {updateProfileMutation.isError && (
             <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-              Failed to update your profile. Please try again.
+              {getApiErrorMessage(
+                updateProfileMutation.error,
+                "Failed to update your profile. Please try again."
+              )}
             </div>
           )}
-
           {/* SUCCESS MESSAGE */}
 
           {updateProfileMutation.isSuccess && (

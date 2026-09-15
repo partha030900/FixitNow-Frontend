@@ -3,27 +3,27 @@
 import Link from "next/link";
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
-
 import { useBookings } from "@/hooks/useBookings";
 import { useCreatePayment } from "@/hooks/useCreatePayment";
 import { usePayments } from "@/hooks/usePayments";
 import { useCreateReview } from "@/hooks/useCreateReview";
 import { useCancelBooking } from "@/hooks/useCancelBooking";
+import { getApiErrorMessage } from "@/lib/error";
 
 export default function CustomerDashboard() {
-  
-  {/* BOOKINGS */}
-  
+
+  {/* BOOKINGS */ }
+
 
   const {
     data: bookings = [],
     isLoading,
     isError,
+    error,
   } = useBookings();
 
-  
-  {/* PAYMENTS */}
-  
+  {/* PAYMENTS */ }
+
 
   const {
     data: payments = [],
@@ -31,22 +31,22 @@ export default function CustomerDashboard() {
     isError: paymentsError,
   } = usePayments();
 
-  {/*PAYMENT MUTATION*/}
-  
+  {/*PAYMENT MUTATION*/ }
+
 
   const createPaymentMutation = useCreatePayment();
 
-  
-  {/* REVIEW MUTATION */}
-  
+
+  {/* REVIEW MUTATION */ }
+
 
   const createReviewMutation = useCreateReview();
 
   const cancelBookingMutation = useCancelBooking();
 
-  
-  {/* REVIEW STATE */}
-  
+
+  {/* REVIEW STATE */ }
+
 
   const [reviewBookingId, setReviewBookingId] =
     useState<string | null>(null);
@@ -55,9 +55,9 @@ export default function CustomerDashboard() {
 
   const [comment, setComment] = useState("");
 
-  
-  {/* REVIEW SUBMIT */}
-  
+
+  {/* REVIEW SUBMIT */ }
+
 
   const handleReviewSubmit = (bookingId: string) => {
     createReviewMutation.mutate(
@@ -112,7 +112,10 @@ export default function CustomerDashboard() {
 
         {isError && (
           <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-600">
-            Failed to load bookings. Please try again.
+            {getApiErrorMessage(
+              error,
+              "Failed to load bookings. Please try again."
+            )}
           </div>
         )}
 
@@ -358,9 +361,11 @@ export default function CustomerDashboard() {
                   {/* PAYMENT ERROR*/}
 
                   {createPaymentMutation.isError && (
-                    <div className="mt-4 rounded-lg bg-red-50 p-4 text-sm text-red-600">
-                      Failed to create payment session.
-                      Please try again.
+                    <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+                      {getApiErrorMessage(
+                        createPaymentMutation.error,
+                        "Failed to create payment session. Please try again."
+                      )}
                     </div>
                   )}
                   {cancelBookingMutation.isError && (
@@ -444,8 +449,10 @@ export default function CustomerDashboard() {
 
                       {createReviewMutation.isError && (
                         <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-                          Failed to submit review.
-                          Please try again.
+                          {getApiErrorMessage(
+                            createReviewMutation.error,
+                            "Failed to submit review. Please try again."
+                          )}
                         </div>
                       )}
 

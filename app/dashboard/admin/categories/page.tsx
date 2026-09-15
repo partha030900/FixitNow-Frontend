@@ -2,15 +2,18 @@
 
 import { FormEvent, useState } from "react";
 import Navbar from "@/components/Navbar";
-
 import { useAdminCategories } from "@/hooks/useAdminCategories";
 import { useCreateAdminCategory } from "@/hooks/useCreateAdminCategory";
+import { getApiErrorMessage } from "@/lib/error";
+
 
 export default function AdminCategoriesPage() {
+
   const {
     data: categories = [],
     isLoading,
     isError,
+    error,
   } = useAdminCategories();
 
   const createCategoryMutation =
@@ -128,7 +131,10 @@ export default function AdminCategoriesPage() {
 
             {createCategoryMutation.isError && (
               <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-                Failed to create category. Please try again.
+                {getApiErrorMessage(
+                  createCategoryMutation.error,
+                  "Failed to create category. Please try again."
+                )}
               </div>
             )}
 

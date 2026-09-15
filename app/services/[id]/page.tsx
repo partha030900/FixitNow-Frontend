@@ -6,6 +6,8 @@ import Navbar from "@/components/Navbar";
 import { useServices } from "@/hooks/useServices";
 import { useCreateBooking } from "@/hooks/useCreateBooking";
 import { useBookedSlots } from "@/hooks/useBookedSlots";
+import { getApiErrorMessage } from "@/lib/error";
+
 
 export default function ServiceDetailsPage() {
   const params = useParams();
@@ -288,10 +290,13 @@ const {data: bookedSlots = [], isLoading: isBookedSlotsLoading,
     )}
 
     {createBookingMutation.isError && (
-      <div className="rounded-lg bg-red-50 p-4 text-red-600">
-        Failed to create booking. Please try again.
-      </div>
+  <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-600">
+    {getApiErrorMessage(
+      createBookingMutation.error,
+      "Failed to create booking. Please try again."
     )}
+  </div>
+)}
   </div>
 </div>
         </div>

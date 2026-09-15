@@ -2,9 +2,10 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-
 import { loginUser } from "@/lib/auth";
+import { getApiErrorMessage } from "@/lib/error";
 import { useAuthStore } from "@/store/authStore";
+
 
 export default function LoginPage() {
   const router = useRouter();
@@ -35,12 +36,14 @@ export default function LoginPage() {
       setAuth(result.user, result.accessToken);
 
       router.push("/");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Login error:", error);
 
       setError(
-        error?.response?.data?.message ||
+        getApiErrorMessage(
+          error,
           "Login failed. Please check your email and password."
+        )
       );
     } finally {
       setIsLoading(false);

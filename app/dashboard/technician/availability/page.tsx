@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
-
 import { useMyTechnicianProfile } from "@/hooks/useMyTechnicianProfile";
 import { useUpdateTechnicianAvailability } from "@/hooks/useUpdateTechnicianAvailability";
 import type { AvailabilitySlot } from "@/lib/technician";
+import { getApiErrorMessage } from "@/lib/error";
 
 const days = [
   { name: "MONDAY", value: 0 },
@@ -62,10 +62,12 @@ const defaultSchedule: Record<string, DaySchedule> = {
 };
 
 export default function TechnicianAvailabilityPage() {
+
   const {
     data: profile,
     isLoading,
     isError,
+    error,
   } = useMyTechnicianProfile();
 
   const updateAvailabilityMutation =
@@ -76,8 +78,8 @@ export default function TechnicianAvailabilityPage() {
       defaultSchedule
     );
 
-  
-  {/*LOAD EXISTING AVAILABILITY*/}
+
+  {/*LOAD EXISTING AVAILABILITY*/ }
 
   useEffect(() => {
     if (!profile?.availability) {
@@ -150,8 +152,8 @@ export default function TechnicianAvailabilityPage() {
     setSchedule(existingSchedule);
   }, [profile]);
 
+
   //  UPDATE ONE DAY //
-  
 
   const updateDay = (
     dayName: string,
@@ -168,7 +170,7 @@ export default function TechnicianAvailabilityPage() {
     }));
   };
 
-  {/*SAVE AVAILABILITY*/}
+  {/*SAVE AVAILABILITY*/ }
 
   const handleSubmit = (
     e: React.FormEvent<HTMLFormElement>
@@ -190,7 +192,7 @@ export default function TechnicianAvailabilityPage() {
     updateAvailabilityMutation.mutate(slots);
   };
 
-  {/*LOADING*/}
+  {/*LOADING*/ }
 
   if (isLoading) {
     return (
@@ -206,7 +208,7 @@ export default function TechnicianAvailabilityPage() {
     );
   }
 
-  {/*ERROR*/}
+  {/*ERROR*/ }
 
   if (isError || !profile) {
     return (
@@ -215,15 +217,18 @@ export default function TechnicianAvailabilityPage() {
 
         <div className="mx-auto max-w-4xl px-6 py-12">
           <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-600">
-            Failed to load technician profile.
+            {getApiErrorMessage(
+              error,
+              "Failed to load technician profile. Please try again."
+            )}
           </div>
         </div>
       </main>
     );
   }
 
-  {/*PAGE*/}
-  
+  {/*PAGE*/ }
+
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -376,9 +381,10 @@ export default function TechnicianAvailabilityPage() {
 
           {updateAvailabilityMutation.isError && (
             <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-              Failed to update availability.
-              Please check your working hours and
-              try again.
+              {getApiErrorMessage(
+                updateAvailabilityMutation.error,
+                "Failed to update availability. Please check your working hours and try again."
+              )}
             </div>
           )}
 
