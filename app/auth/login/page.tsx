@@ -91,7 +91,7 @@ if (!email.includes("@")) {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="you@example.com"
-              className="w-full rounded-lg border px-4 py-3 outline-none focus:border-blue-500"
+              className="w-full rounded-lg text-black border px-4 py-3 outline-none focus:border-blue-500"
             />
           </div>
 
@@ -105,7 +105,7 @@ if (!email.includes("@")) {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="Enter your password"
-              className="w-full rounded-lg border px-4 py-3 outline-none focus:border-blue-500"
+              className="w-full rounded-lg text-black border px-4 py-3 outline-none focus:border-blue-500"
             />
           </div>
 
